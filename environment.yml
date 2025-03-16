@@ -45,6 +45,7 @@ dependencies:
       - adafruit-circuitpython-requests==4.1.10
       - adafruit-circuitpython-ssd1306==2.12.19
       - adafruit-circuitpython-typing==1.11.2
+      - adafruit-circuitpython-tca9548a==0.8.0
       - adafruit-platformdetect==3.77.0
       - adafruit-pureio==1.1.11
       - adafruit-python-shell==1.9.1

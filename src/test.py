@@ -3,34 +3,23 @@
 # Author: Tony DiCola
 # License: Public Domain
 
-# Import all board pins.
-from board import SCL, SDA
-import busio
+# SPDX-FileCopyrightText: 2021 Carter Nelson for Adafruit Industries
+# SPDX-License-Identifier: MIT
 
-# Import the SSD1306 module.
-import adafruit_ssd1306
+# This example shows using TCA9548A to perform a simple scan for connected devices
+import board
+import adafruit_tca9548a
 
+# Create I2C bus as normal
+i2c = board.I2C()  # uses board.SCL and board.SDA
+# i2c = board.STEMMA_I2C()  # For using the built-in STEMMA QT connector on a microcontroller
 
-# Create the I2C interface.
-i2c = busio.I2C(SCL, SDA)
+# Create the TCA9548A object and give it the I2C bus
+tca = adafruit_tca9548a.TCA9548A(i2c)
 
-# Create the SSD1306 OLED class.
-# The first two parameters are the pixel width and pixel height.  Change these
-# to the right size for your display!
-display = adafruit_ssd1306.SSD1306_I2C(128, 32, i2c)
-# Alternatively you can change the I2C address of the device with an addr parameter:
-#display = adafruit_ssd1306.SSD1306_I2C(128, 32, i2c, addr=0x31)
-
-# Clear the display.  Always call show after changing pixels to make the display
-# update visible!
-display.fill(0)
-
-display.show()
-
-# Set a pixel in the origin 0,0 position.
-display.pixel(0, 0, 1)
-# Set a pixel in the middle 64, 16 position.
-display.pixel(64, 16, 1)
-# Set a pixel in the opposite 127, 31 position.
-display.pixel(127, 31, 1)
-display.show()
+for channel in range(8):
+    if tca[channel].try_lock():
+        print("Channel {}:".format(channel), end="")
+        addresses = tca[channel].scan()
+        print([hex(address) for address in addresses if address != 0x70])
+        tca[channel].unlock()
